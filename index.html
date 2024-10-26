@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base64 Encoder</title>
+</head>
+<body>
+    <input type="file" id="fileInput" />
+    <button id="convertButton">Convert to Base64</button>
+    <button id="saveButton" style="display:none;">Save to .txt</button>
+    <pre id="output"></pre> <!-- To display the Base64 output -->
+
+    <script>
+        let base64Data = '';
+
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+
+                // Event handler for when the file is read
+                reader.onload = function(e) {
+                    base64Data = e.target.result.split(',')[1]; // Extract Base64 string
+                };
+
+                // Read the file as a Data URL
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('convertButton').addEventListener('click', function() {
+            if (base64Data) {
+                console.log(base64Data); // Outputs the Base64 string
+                document.getElementById('output').textContent = base64Data; // Display Base64 string
+                document.getElementById('saveButton').style.display = 'inline'; // Show save button
+            } else {
+                alert('Please select a file first.');
+            }
+        });
+
+        document.getElementById('saveButton').addEventListener('click', function() {
+            const blob = new Blob([base64Data], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'base64output.txt'; // File name
+            document.body.appendChild(a);
+            a.click(); // Programmatically click the link to trigger the download
+            document.body.removeChild(a); // Remove the link from the document
+            URL.revokeObjectURL(url); // Free up memory
+        });
+    </script>
+</body>
+</html>
